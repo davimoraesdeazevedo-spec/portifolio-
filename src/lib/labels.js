@@ -52,6 +52,11 @@ export const GRAVIDADES = [
   { value: 'alta', label: 'Alta' },
 ];
 
+export const ALERTA_NIVEIS = [
+  { value: 'atencao', label: 'Atenção' },
+  { value: 'critico', label: 'Crítico' },
+];
+
 export const AUDITORIA_TIPOS = [
   { value: 'SIM', label: 'SIM' },
   { value: 'SISBI', label: 'SISBI' },

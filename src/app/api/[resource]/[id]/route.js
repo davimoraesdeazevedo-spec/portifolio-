@@ -1,10 +1,14 @@
 // GET    /api/:resource/:id — read one
 // PATCH  /api/:resource/:id — partial update
 // DELETE /api/:resource/:id — delete
+//
+// Toda rota exige login e a permissão do cargo (ver / editar / excluir).
 
 import { NextResponse } from 'next/server';
 import { getResource } from '@/lib/resources';
 import { HttpError, deleteRow, getRow, updateRow } from '@/lib/resource-service';
+import { exigirPermissao } from '@/lib/auth';
+import { permissaoDoRecurso } from '@/lib/roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,10 +28,11 @@ async function resolve(params) {
 }
 
 export async function GET(_request, { params }) {
-  const { error, resource, id } = await resolve(params);
+  const { error, name, resource, id } = await resolve(params);
   if (error) return error;
 
   try {
+    await exigirPermissao(permissaoDoRecurso(name, 'GET'));
     const row = await getRow(resource, id);
     if (!row) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
     return NextResponse.json({ data: row });
@@ -41,6 +46,7 @@ export async function PATCH(request, { params }) {
   if (error) return error;
 
   try {
+    await exigirPermissao(permissaoDoRecurso(name, 'PATCH'));
     const payload = await request.json();
     const row = await updateRow(name, resource, id, payload);
     return NextResponse.json({ data: row });
@@ -50,10 +56,11 @@ export async function PATCH(request, { params }) {
 }
 
 export async function DELETE(_request, { params }) {
-  const { error, resource, id } = await resolve(params);
+  const { error, name, resource, id } = await resolve(params);
   if (error) return error;
 
   try {
+    await exigirPermissao(permissaoDoRecurso(name, 'DELETE'));
     const result = await deleteRow(resource, id);
     return NextResponse.json({ data: result });
   } catch (caught) {

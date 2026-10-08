@@ -171,6 +171,29 @@ export const RESOURCES = {
     search: ['nome', 'cargo', 'cpf'],
     orderBy: 'nome ASC',
   },
+
+  // ------------------------------------------------ Controle de acesso
+  // Gerido apenas pelo Supervisor (permissão "usuarios").
+  usuarios: {
+    table: 'usuarios',
+    columns: ['nome', 'cargo', 'ativo'],
+    types: { ativo: T.boolean },
+    required: ['nome', 'cargo'],
+    filters: ['cargo', 'ativo'],
+    search: ['nome', 'cargo'],
+    orderBy: 'nome ASC',
+  },
+
+  // ------------------------------------------------------------- Alertas
+  // Emitidos pelo Controle de Qualidade e pelo Supervisor (permissão "alertas").
+  alertas: {
+    table: 'alertas',
+    columns: ['nivel', 'modulo', 'mensagem', 'autor'],
+    required: ['mensagem'],
+    filters: ['nivel'],
+    search: ['mensagem', 'modulo', 'autor'],
+    orderBy: 'created_at DESC, id DESC',
+  },
 };
 
 export function getResource(name) {

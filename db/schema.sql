@@ -226,3 +226,37 @@ CREATE TABLE IF NOT EXISTS treinamento_participantes (
   presenca            BOOLEAN DEFAULT TRUE,
   certificado_emitido BOOLEAN DEFAULT FALSE
 );
+
+-- ============================================================
+-- Controle de acesso — usuários, sessões e alertas manuais
+-- ============================================================
+CREATE TABLE IF NOT EXISTS usuarios (
+  id         SERIAL PRIMARY KEY,
+  nome       TEXT NOT NULL,
+  cargo      TEXT NOT NULL, -- funcionario|operador|qualidade|supervisor
+  ativo      BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- O nome identifica a conta no login, então não pode se repetir.
+CREATE UNIQUE INDEX IF NOT EXISTS usuarios_nome_lower_key ON usuarios (lower(nome));
+
+CREATE TABLE IF NOT EXISTS sessoes (
+  token      TEXT PRIMARY KEY,
+  usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS sessoes_usuario_idx ON sessoes (usuario_id);
+
+-- Alertas emitidos manualmente pelo Controle de Qualidade / Supervisor,
+-- somados aos alertas automáticos calculados pelo painel.
+CREATE TABLE IF NOT EXISTS alertas (
+  id         SERIAL PRIMARY KEY,
+  nivel      TEXT NOT NULL DEFAULT 'atencao', -- atencao|critico
+  modulo     TEXT,
+  mensagem   TEXT NOT NULL,
+  autor      TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

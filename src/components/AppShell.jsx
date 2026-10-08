@@ -1,11 +1,27 @@
 'use client';
 
 import { Fragment, useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { NAV_GROUPS, NAV_ITEMS, navItemFor } from '@/lib/nav';
+import { labelCargo } from '@/lib/roles';
+import { AuthProvider, useAuth } from './AuthProvider';
 
 export default function AppShell({ children }) {
   const pathname = usePathname();
+
+  // A tela de login não usa o shell: sem barra lateral e sem exigir sessão.
+  if (pathname === '/login') return <>{children}</>;
+
+  return (
+    <AuthProvider>
+      <AuthedShell pathname={pathname}>{children}</AuthedShell>
+    </AuthProvider>
+  );
+}
+
+function AuthedShell({ pathname, children }) {
+  const router = useRouter();
+  const { usuario, carregando, sair, pode } = useAuth();
   const [today, setToday] = useState('');
   const current = navItemFor(pathname);
 
@@ -22,6 +38,16 @@ export default function AppShell({ children }) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   }, []);
 
+  // Sem sessão válida, volta para a tela de login.
+  useEffect(() => {
+    if (!carregando && !usuario) router.replace('/login');
+  }, [carregando, usuario, router]);
+
+  if (carregando) return <div className="loading">Verificando acesso…</div>;
+  if (!usuario) return null;
+
+  const items = NAV_ITEMS.filter((item) => !item.permissao || pode(item.permissao));
+
   return (
     <div className="layout">
       <aside className="sidebar no-print">
@@ -33,20 +59,24 @@ export default function AppShell({ children }) {
           </div>
         </div>
 
-        {NAV_GROUPS.map((group) => (
-          <Fragment key={group}>
-            <div className="nav-group">{group}</div>
-            {NAV_ITEMS.filter((item) => item.group === group).map((item) => {
-              const active = item.href === '/' ? pathname === '/' : pathname?.startsWith(item.href);
-              return (
-                <a key={item.href} href={item.href} className={`nav-link${active ? ' active' : ''}`}>
-                  <span className="icon" aria-hidden="true">{item.icon}</span>
-                  {item.label}
-                </a>
-              );
-            })}
-          </Fragment>
-        ))}
+        {NAV_GROUPS.map((group) => {
+          const groupItems = items.filter((item) => item.group === group);
+          if (groupItems.length === 0) return null;
+          return (
+            <Fragment key={group}>
+              <div className="nav-group">{group}</div>
+              {groupItems.map((item) => {
+                const active = item.href === '/' ? pathname === '/' : pathname?.startsWith(item.href);
+                return (
+                  <a key={item.href} href={item.href} className={`nav-link${active ? ' active' : ''}`}>
+                    <span className="icon" aria-hidden="true">{item.icon}</span>
+                    {item.label}
+                  </a>
+                );
+              })}
+            </Fragment>
+          );
+        })}
       </aside>
 
       <div className="main">
@@ -55,6 +85,11 @@ export default function AppShell({ children }) {
           <div className="topbar-meta">
             <span className="badge badge--brand">Indústria de produtos de origem animal</span>
             {today ? <span>{today}</span> : null}
+            <span className="user-chip">
+              <span className="user-chip-name">{usuario.nome}</span>
+              <span className="user-chip-cargo">{labelCargo(usuario.cargo)}</span>
+            </span>
+            <button type="button" className="btn btn--sm no-print" onClick={sair}>Sair</button>
           </div>
         </header>
         {children}

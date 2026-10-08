@@ -6,6 +6,8 @@
 
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { exigirPermissao } from '@/lib/auth';
+import { HttpError } from '@/lib/resource-service';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +40,8 @@ export async function GET(request) {
   const like = `%${term}%`;
 
   try {
+    await exigirPermissao('ver');
+
     let entradas = (await query(MATERIA_PRIMA_SQL, [like, []])).rows;
     let producao = (await query(PRODUCAO_SQL, [like, []] )).rows;
     let saidas = (await query(EXPEDICAO_SQL, [like, []])).rows;
@@ -93,7 +97,8 @@ export async function GET(request) {
       total: entradas.length + producao.length + saidas.length,
     });
   } catch (error) {
-    console.error('[api/rastreabilidade]', error);
-    return NextResponse.json({ error: error.message || 'Erro na pesquisa de lote' }, { status: 500 });
+    const status = error instanceof HttpError ? error.status : 500;
+    if (status >= 500) console.error('[api/rastreabilidade]', error);
+    return NextResponse.json({ error: error.message || 'Erro na pesquisa de lote' }, { status });
   }
 }

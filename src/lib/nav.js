@@ -1,4 +1,6 @@
 // Sidebar navigation (single source of truth for routes and page titles).
+//
+// `permissao` (opcional) esconde o item de quem não tem a permissão no cargo.
 
 export const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: '📊', group: 'Visão geral' },
@@ -11,10 +13,12 @@ export const NAV_ITEMS = [
   { href: '/laboratorio', label: 'Laboratório', icon: '🧪', group: 'Operação' },
   { href: '/nao-conformidades', label: 'Não conformidades', icon: '⚠️', group: 'Operação' },
   { href: '/auditorias', label: 'Auditorias', icon: '✅', group: 'Operação' },
+  { href: '/alertas', label: 'Alertas', icon: '🚨', group: 'Operação', permissao: 'alertas' },
 
   { href: '/documentos', label: 'Documentos', icon: '📁', group: 'Gestão' },
   { href: '/produtos', label: 'Produtos', icon: '🥩', group: 'Gestão' },
   { href: '/treinamentos', label: 'Treinamentos', icon: '🎓', group: 'Gestão' },
+  { href: '/usuarios', label: 'Usuários', icon: '👥', group: 'Gestão', permissao: 'usuarios' },
 ];
 
 export const NAV_GROUPS = ['Visão geral', 'Programas', 'Operação', 'Gestão'];

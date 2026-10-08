@@ -1,11 +1,13 @@
 'use client';
 
 import { AlertList, Badge, BarRow, Card, ConformidadeBadge, DataTable, PageHeader, StatCard } from '@/components/ui';
+import { useAuth } from '@/components/AuthProvider';
 import { useFetchJson } from '@/lib/use-fetch';
 import { GRAVIDADES, NC_STATUS, TEMPERATURA_TIPOS, labelOf } from '@/lib/labels';
 import { formatDate, formatDateTime, formatNumber, formatPercent } from '@/lib/format';
 
 export default function DashboardPage() {
+  const { pode } = useAuth();
   const { data, loading, error } = useFetchJson('/api/dashboard');
 
   if (loading && !data) return <div className="loading">Carregando indicadores…</div>;
@@ -84,6 +86,30 @@ export default function DashboardPage() {
           )}
         </Card>
       </div>
+
+      <Card
+        title="Alertas emitidos pelo Controle de Qualidade"
+        subtitle="Alertas manuais, além dos automáticos acima"
+        actions={pode('alertas') ? <a className="btn btn--sm" href="/alertas">Gerenciar alertas</a> : null}
+      >
+        {data?.alertasManuais?.length ? (
+          <div className="alert-list">
+            {data.alertasManuais.map((alerta) => (
+              <div key={alerta.id} className={`alert alert--${alerta.nivel === 'critico' ? 'crit' : 'atencao'}`}>
+                <span className="alert-icon" aria-hidden="true">{alerta.nivel === 'critico' ? '⛔' : '⚠️'}</span>
+                <span>
+                  <span className="alert-module">{alerta.modulo || 'Alerta manual'}</span>
+                  <br />
+                  {alerta.mensagem}
+                  {alerta.autor ? <span className="cell-muted"> · por {alerta.autor}</span> : null}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="muted text-sm">Nenhum alerta emitido pelo Controle de Qualidade.</p>
+        )}
+      </Card>
 
       <div className="grid grid-2">
         <Card title="Últimas leituras fora da faixa" subtitle="Ação corretiva obrigatória conforme o PAC de temperaturas">

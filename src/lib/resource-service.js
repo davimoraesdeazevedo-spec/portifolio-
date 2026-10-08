@@ -12,6 +12,14 @@ export class HttpError extends Error {
   }
 }
 
+/** Turns a PostgreSQL duplicate-key error into a friendly 409 instead of a 500. */
+function translateDbError(error) {
+  if (error && error.code === '23505') {
+    return new HttpError(409, 'Já existe um registro com esse mesmo valor.');
+  }
+  return error;
+}
+
 function coerce(value, type) {
   if (value === undefined) return undefined;
   if (value === null || value === '') return null;
@@ -120,11 +128,15 @@ export async function createRow(resourceName, resource, payload) {
 
   const columns = Object.keys(finalRow);
   const placeholders = columns.map((_, index) => `$${index + 1}`);
-  const { rows } = await query(
-    `INSERT INTO ${resource.table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`,
-    columns.map((column) => finalRow[column])
-  );
-  return rows[0];
+  try {
+    const { rows } = await query(
+      `INSERT INTO ${resource.table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`,
+      columns.map((column) => finalRow[column])
+    );
+    return rows[0];
+  } catch (error) {
+    throw translateDbError(error);
+  }
 }
 
 export async function updateRow(resourceName, resource, id, payload) {
@@ -138,11 +150,15 @@ export async function updateRow(resourceName, resource, id, payload) {
 
   const columns = Object.keys(finalRow);
   const assignments = columns.map((column, index) => `${column} = $${index + 1}`);
-  const { rows } = await query(
-    `UPDATE ${resource.table} SET ${assignments.join(', ')} WHERE id = $${columns.length + 1} RETURNING *`,
-    [...columns.map((column) => finalRow[column]), numericId(id)]
-  );
-  return rows[0];
+  try {
+    const { rows } = await query(
+      `UPDATE ${resource.table} SET ${assignments.join(', ')} WHERE id = $${columns.length + 1} RETURNING *`,
+      [...columns.map((column) => finalRow[column]), numericId(id)]
+    );
+    return rows[0];
+  } catch (error) {
+    throw translateDbError(error);
+  }
 }
 
 export async function deleteRow(resource, id) {

@@ -1,7 +1,11 @@
 // GET /api/dashboard — indicators, pending items and automatic alerts.
+//
+// Exige login (permissão "ver").
 
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { exigirPermissao } from '@/lib/auth';
+import { HttpError } from '@/lib/resource-service';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +16,8 @@ async function one(sql, params = []) {
 
 export async function GET() {
   try {
+    await exigirPermissao('ver');
+
     const [
       pcc,
       monitoramentos,
@@ -30,6 +36,7 @@ export async function GET() {
       auditorias,
       pacs,
       rastreabilidade,
+      alertasManuais,
     ] = await Promise.all([
       one('SELECT count(*)::int AS total, count(*) FILTER (WHERE ativo)::int AS ativos FROM pcc'),
       one(`SELECT count(*)::int AS total,
@@ -81,6 +88,7 @@ export async function GET() {
       one(`SELECT (SELECT count(*) FROM materias_primas)::int AS entradas,
                   (SELECT count(*) FROM producao)::int AS lotes_producao,
                   (SELECT count(*) FROM expedicao)::int AS saidas`),
+      query('SELECT * FROM alertas ORDER BY created_at DESC, id DESC LIMIT 20'),
     ]);
 
     const ncTotal = ncPorStatus.rows.reduce((sum, row) => sum + row.total, 0);
@@ -147,9 +155,11 @@ export async function GET() {
       treinamentosLista: treinamentosLista.rows,
       auditorias: auditorias.rows,
       alertas,
+      alertasManuais: alertasManuais.rows,
     });
   } catch (error) {
-    console.error('[api/dashboard]', error);
-    return NextResponse.json({ error: error.message || 'Erro ao carregar indicadores' }, { status: 500 });
+    const status = error instanceof HttpError ? error.status : 500;
+    if (status >= 500) console.error('[api/dashboard]', error);
+    return NextResponse.json({ error: error.message || 'Erro ao carregar indicadores' }, { status });
   }
 }

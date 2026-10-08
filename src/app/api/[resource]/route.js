@@ -1,9 +1,13 @@
 // GET  /api/:resource  — list (filters + free-text search)
 // POST /api/:resource  — create
+//
+// Toda rota exige login e a permissão do cargo (ver / criar / editar / excluir).
 
 import { NextResponse } from 'next/server';
 import { getResource } from '@/lib/resources';
 import { HttpError, createRow, listRows } from '@/lib/resource-service';
+import { exigirPermissao } from '@/lib/auth';
+import { permissaoDoRecurso } from '@/lib/roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +27,7 @@ export async function GET(request, { params }) {
   if (!resource) return resourceNotFound(name);
 
   try {
+    await exigirPermissao(permissaoDoRecurso(name, 'GET'));
     const rows = await listRows(name, resource, new URL(request.url).searchParams);
     return NextResponse.json({ data: rows, count: rows.length });
   } catch (error) {
@@ -36,6 +41,7 @@ export async function POST(request, { params }) {
   if (!resource) return resourceNotFound(name);
 
   try {
+    await exigirPermissao(permissaoDoRecurso(name, 'POST'));
     const payload = await request.json();
     const row = await createRow(name, resource, payload);
     return NextResponse.json({ data: row }, { status: 201 });

@@ -2,11 +2,15 @@
 
 // Generic list + create form used by most modules.
 // The same component drives every CRUD screen so the modules stay consistent.
+//
+// O cargo do usuário decide o que aparece: quem não pode criar não vê o
+// formulário; quem não pode editar/excluir não vê as ações da linha.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Card, DataTable, FieldRenderer } from './ui';
 import { useDebounced } from '@/lib/use-fetch';
 import { uploadFile } from '@/lib/api-client';
+import { useAuth } from './AuthProvider';
 
 function initialValues(fields, overrides = {}) {
   const values = {};
@@ -40,6 +44,11 @@ export default function CrudResource({
   defaultFormOpen = false,
   onLoaded,
 }) {
+  const { pode } = useAuth();
+  const canCreate = fields.length > 0 && pode('criar');
+  const canEdit = pode('editar');
+  const canDelete = allowDelete && pode('excluir');
+
   // Held in a ref so an inline callback from the parent can never retrigger a fetch.
   const onLoadedRef = useRef(onLoaded);
   useEffect(() => {
@@ -50,7 +59,7 @@ export default function CrudResource({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [showForm, setShowForm] = useState(defaultFormOpen);
+  const [showForm, setShowForm] = useState(defaultFormOpen && canCreate);
   const [values, setValues] = useState(() => initialValues(fields, formOverrides));
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -166,7 +175,7 @@ export default function CrudResource({
     }
   }
 
-  const hasActions = Boolean(rowActions) || allowDelete;
+  const hasActions = Boolean(rowActions && canEdit) || canDelete;
   // Stable, selector-friendly ids for the generated form controls.
   const idPrefix = `${endpoint.replace(/[^a-zA-Z0-9]+/g, '_')}_`;
 
@@ -185,7 +194,7 @@ export default function CrudResource({
               onChange={(event) => setSearch(event.target.value)}
             />
           ) : null}
-          {fields.length > 0 ? (
+          {canCreate ? (
             <button type="button" className="btn btn--primary" onClick={() => setShowForm((open) => !open)}>
               {showForm ? 'Fechar formulário' : `+ ${createLabel}`}
             </button>
@@ -215,7 +224,7 @@ export default function CrudResource({
 
       {error ? <div className="alert alert--crit" style={{ marginBottom: 14 }}>⚠️ {error}</div> : null}
 
-      {showForm ? (
+      {showForm && canCreate ? (
         <form onSubmit={submit} style={{ marginBottom: 10 }}>
           <h4 className="card-title" style={{ marginBottom: 12 }}>{formTitle ?? createLabel}</h4>
           <div className="form-grid">
@@ -251,8 +260,8 @@ export default function CrudResource({
           hasActions
             ? (row) => (
                 <div className="row" style={{ justifyContent: 'flex-end' }}>
-                  {rowActions ? rowActions(row, load) : null}
-                  {allowDelete ? (
+                  {rowActions && canEdit ? rowActions(row, load) : null}
+                  {canDelete ? (
                     <button type="button" className="btn btn--sm btn--danger" disabled={busyId === row.id} onClick={() => remove(row)}>
                       Excluir
                     </button>
