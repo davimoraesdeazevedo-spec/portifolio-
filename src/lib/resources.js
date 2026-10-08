@@ -36,11 +36,11 @@ export const RESOURCES = {
   // ------------------------------------------------------------------ PACs
   pacs: {
     table: 'pacs',
-    columns: ['tipo', 'titulo', 'descricao', 'frequencia', 'responsavel', 'ativo'],
-    types: { ativo: T.boolean },
+    columns: ['tipo', 'codigo', 'revisao', 'titulo', 'objetivo', 'documentos_referencia', 'campo_aplicacao', 'definicoes', 'responsabilidades', 'descricao', 'monitoramento', 'frequencia', 'responsavel', 'acoes_corretivas', 'verificacao', 'registros_doc', 'anexos', 'controle_revisoes', 'responsavel_legal', 'responsavel_tecnico', 'data_emissao', 'data_revisao', 'ativo'],
+    types: { ativo: T.boolean, data_emissao: T.date, data_revisao: T.date },
     required: ['tipo', 'titulo'],
     filters: ['tipo', 'ativo'],
-    search: ['titulo', 'descricao'],
+    search: ['titulo', 'codigo', 'descricao'],
     orderBy: 'tipo ASC, titulo ASC',
   },
   pac_registros: {

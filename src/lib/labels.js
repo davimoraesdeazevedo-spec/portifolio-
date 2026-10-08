@@ -1,16 +1,22 @@
 // Domain vocabulary shared by the UI: option lists and lookup helpers.
 
+// Elementos de controle obrigatórios — Portaria SEMAG-SIM nº 15/2026, art. 5º (I a XIV).
 export const PAC_TIPOS = [
-  { value: 'manutencao', label: 'Manutenção' },
-  { value: 'agua', label: 'Água' },
-  { value: 'higiene', label: 'Higiene Operacional' },
-  { value: 'manipuladores', label: 'Manipuladores' },
-  { value: 'pragas', label: 'Pragas' },
-  { value: 'materias_primas', label: 'Matérias-primas' },
-  { value: 'temperaturas', label: 'Temperaturas' },
-  { value: 'rastreabilidade', label: 'Rastreabilidade' },
-  { value: 'fraudes', label: 'Fraudes' },
-  { value: 'laboratorio', label: 'Laboratório' },
+  { value: 'manutencao', label: 'I – Manutenção das instalações e equipamentos (calibração e aferição)' },
+  { value: 'agua', label: 'II – Água de abastecimento' },
+  { value: 'pragas', label: 'III – Controle integrado de pragas' },
+  { value: 'higiene', label: 'IV – Higiene industrial e operacional' },
+  { value: 'manipuladores', label: 'V – Higiene e hábitos higiênicos dos funcionários' },
+  { value: 'pso', label: 'VI – Procedimentos Sanitários Operacionais' },
+  { value: 'materias_primas', label: 'VII – Controle de matérias-primas, ingredientes e embalagens' },
+  { value: 'temperaturas', label: 'VIII – Controle de temperaturas' },
+  { value: 'appcc', label: 'IX – APPCC' },
+  { value: 'laboratorio', label: 'X – Análises laboratoriais' },
+  { value: 'fraudes', label: 'XI – Controle de formulação e combate à fraude econômica' },
+  { value: 'rastreabilidade', label: 'XII – Rastreabilidade e recolhimento' },
+  { value: 'bem_estar_animal', label: 'XIII – Bem-estar animal (quando aplicável)' },
+  { value: 'mer', label: 'XIV – Material Especificado de Risco – MER (quando aplicável)' },
+  { value: 'adicional', label: 'Elemento adicional (art. 5º, §§ 1º e 2º)' },
 ];
 
 export const TEMPERATURA_TIPOS = [

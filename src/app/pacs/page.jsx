@@ -8,13 +8,36 @@ import { PAC_TIPOS, labelOf } from '@/lib/labels';
 import { formatDate } from '@/lib/format';
 
 const PAC_FIELDS = [
-  { name: 'tipo', label: 'Programa de autocontrole', type: 'select', options: PAC_TIPOS, required: true },
-  { name: 'titulo', label: 'Título do programa', type: 'text', required: true, placeholder: 'Ex.: Controle de pragas' },
-  { name: 'frequencia', label: 'Frequência de execução', type: 'text', placeholder: 'Ex.: Quinzenal' },
-  { name: 'responsavel', label: 'Responsável', type: 'text' },
-  { name: 'descricao', label: 'Descrição / procedimento', type: 'textarea', full: true },
+  // a) Cabeçalho
+  { name: 'tipo', label: 'Elemento de controle (art. 5º)', type: 'select', options: PAC_TIPOS, required: true, full: true },
+  { name: 'titulo', label: 'Título do programa', type: 'text', required: true, placeholder: 'Ex.: Controle integrado de pragas' },
+  { name: 'codigo', label: 'Código do PAC', type: 'text', placeholder: 'Ex.: PAC-03' },
+  { name: 'revisao', label: 'Nº da revisão', type: 'text', placeholder: 'Ex.: 00' },
+  { name: 'data_emissao', label: 'Data de emissão', type: 'date' },
+  { name: 'data_revisao', label: 'Data da revisão vigente', type: 'date' },
+  // c) a g)
+  { name: 'objetivo', label: 'Objetivo', type: 'textarea', full: true },
+  { name: 'documentos_referencia', label: 'Documentos de referência (vigentes; vedado usar revogados)', type: 'textarea', full: true },
+  { name: 'campo_aplicacao', label: 'Campo de aplicação', type: 'textarea', full: true },
+  { name: 'definicoes', label: 'Definições (com fontes citadas)', type: 'textarea', full: true },
+  { name: 'responsabilidades', label: 'Responsabilidades', type: 'textarea', full: true },
+  // h) a l)
+  { name: 'descricao', label: 'Descrição (procedimentos, critérios, limites)', type: 'textarea', full: true },
+  { name: 'monitoramento', label: 'Monitoramento (parâmetros, responsáveis, formulários)', type: 'textarea', full: true },
+  { name: 'frequencia', label: 'Frequência de monitoramento', type: 'text', placeholder: 'Ex.: Quinzenal' },
+  { name: 'responsavel', label: 'Responsável pela execução', type: 'text' },
+  { name: 'acoes_corretivas', label: 'Ações corretivas e medidas preventivas', type: 'textarea', full: true },
+  { name: 'verificacao', label: 'Verificação (documental e in loco; profissional designado)', type: 'textarea', full: true },
+  { name: 'registros_doc', label: 'Registros (preenchimento, guarda, prazo de retenção)', type: 'textarea', full: true },
+  // m) a o)
+  { name: 'anexos', label: 'Anexos (formulários, planilhas, instruções)', type: 'textarea', full: true },
+  { name: 'controle_revisoes', label: 'Controle de revisões e alterações', type: 'textarea', full: true },
+  { name: 'responsavel_legal', label: 'Responsável legal (aprovação/assinatura)', type: 'text' },
+  { name: 'responsavel_tecnico', label: 'Responsável técnico (aprovação/assinatura)', type: 'text' },
   { name: 'ativo', label: 'Programa implantado', type: 'checkbox', defaultValue: true },
 ];
+
+const tabLabel = (label) => label.replace(/^[IVX]+ – /, '').replace(/ \(.*\)$/, '');
 
 export default function PacsPage() {
   const [tipo, setTipo] = useState('todos');
@@ -25,13 +48,13 @@ export default function PacsPage() {
   const pacs = pacsData?.data ?? [];
   const pacSelecionado = pacs.find((item) => String(item.id) === String(pacId));
 
-  const tabs = [{ value: 'todos', label: 'Todos' }, ...PAC_TIPOS];
+  const tabs = [{ value: 'todos', label: 'Todos' }, ...PAC_TIPOS.map((t) => ({ value: t.value, label: tabLabel(t.label) }))];
 
   return (
     <>
       <PageHeader
         title="PACs — Programas de Autocontrole"
-        subtitle="Manutenção, água, higiene operacional, manipuladores, pragas, matérias-primas, temperaturas, rastreabilidade, fraudes e laboratório."
+        subtitle="Elementos de controle obrigatórios e estrutura do PAC conforme a Portaria SEMAG-SIM nº 15/2026 (arts. 5º e 6º)."
       />
 
       <div className="grid grid-4" style={{ marginBottom: 18 }}>
@@ -45,6 +68,20 @@ export default function PacsPage() {
           tone={resumo.fora > 0 ? 'warn' : 'ok'}
         />
       </div>
+
+      <Card title="Cobertura dos elementos obrigatórios (art. 5º)" subtitle="Cada elemento deve ter um PAC implantado, monitorado e verificado">
+        <ul className="rule-list">
+          {PAC_TIPOS.filter((t) => t.value !== 'adicional').map((t) => {
+            const ok = pacs.some((p) => p.tipo === t.value && p.ativo);
+            const opcional = /quando aplicável/.test(t.label);
+            return (
+              <li key={t.value}>
+                {ok ? <Badge tone="ok">✓ Implantado</Badge> : <Badge tone={opcional ? undefined : 'warn'}>{opcional ? 'Se aplicável' : 'Pendente'}</Badge>} {t.label}
+              </li>
+            );
+          })}
+        </ul>
+      </Card>
 
       <Card title="Programas por tipo" subtitle="Selecione o programa para filtrar o cadastro">
         <Tabs items={tabs} value={tipo} onChange={setTipo} />

@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS pcc_monitoramentos (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS pacs (
   id          SERIAL PRIMARY KEY,
-  tipo        TEXT NOT NULL, -- manutencao|agua|higiene|manipuladores|pragas|materias_primas|temperaturas|rastreabilidade|fraudes|laboratorio
+  tipo        TEXT NOT NULL, -- elemento de controle (Portaria SEMAG-SIM 15/2026, art. 5º): ver PAC_TIPOS em src/lib/labels.js
   titulo      TEXT NOT NULL,
   descricao   TEXT,
   frequencia  TEXT,
@@ -42,6 +42,25 @@ CREATE TABLE IF NOT EXISTS pacs (
   ativo       BOOLEAN DEFAULT TRUE,
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Estrutura mínima do PAC (Portaria SEMAG-SIM 15/2026, art. 6º)
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS codigo TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS revisao TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS objetivo TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS documentos_referencia TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS campo_aplicacao TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS definicoes TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS responsabilidades TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS monitoramento TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS acoes_corretivas TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS verificacao TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS registros_doc TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS anexos TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS controle_revisoes TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS responsavel_legal TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS responsavel_tecnico TEXT;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS data_emissao DATE;
+ALTER TABLE pacs ADD COLUMN IF NOT EXISTS data_revisao DATE;
 
 CREATE TABLE IF NOT EXISTS pac_registros (
   id          SERIAL PRIMARY KEY,
