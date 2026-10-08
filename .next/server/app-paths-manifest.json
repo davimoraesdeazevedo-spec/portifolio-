@@ -1,0 +1,22 @@
+{
+  "/api/dashboard/route": "app/api/dashboard/route.js",
+  "/api/[resource]/route": "app/api/[resource]/route.js",
+  "/api/[resource]/[id]/route": "app/api/[resource]/[id]/route.js",
+  "/api/uploads/route": "app/api/uploads/route.js",
+  "/api/uploads/[name]/route": "app/api/uploads/[name]/route.js",
+  "/api/rastreabilidade/route": "app/api/rastreabilidade/route.js",
+  "/page": "app/page.js",
+  "/appcc/page": "app/appcc/page.js",
+  "/pacs/page": "app/pacs/page.js",
+  "/temperaturas/page": "app/temperaturas/page.js",
+  "/rastreabilidade/page": "app/rastreabilidade/page.js",
+  "/laboratorio/page": "app/laboratorio/page.js",
+  "/auditorias/page": "app/auditorias/page.js",
+  "/nao-conformidades/page": "app/nao-conformidades/page.js",
+  "/documentos/page": "app/documentos/page.js",
+  "/produtos/page": "app/produtos/page.js",
+  "/treinamentos/page": "app/treinamentos/page.js",
+  "/auditorias/[id]/relatorio/page": "app/auditorias/[id]/relatorio/page.js",
+  "/produtos/[id]/ficha/page": "app/produtos/[id]/ficha/page.js",
+  "/treinamentos/[id]/certificados/page": "app/treinamentos/[id]/certificados/page.js"
+}
