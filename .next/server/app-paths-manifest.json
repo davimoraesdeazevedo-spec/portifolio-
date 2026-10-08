@@ -2,10 +2,12 @@
   "/api/auth/me/route": "app/api/auth/me/route.js",
   "/api/dashboard/route": "app/api/dashboard/route.js",
   "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/api/[resource]/[id]/route": "app/api/[resource]/[id]/route.js",
-  "/api/[resource]/route": "app/api/[resource]/route.js",
   "/api/auth/logout/route": "app/api/auth/logout/route.js",
+  "/api/[resource]/route": "app/api/[resource]/route.js",
+  "/api/[resource]/[id]/route": "app/api/[resource]/[id]/route.js",
   "/page": "app/page.js",
   "/login/page": "app/login/page.js",
-  "/usuarios/page": "app/usuarios/page.js"
+  "/nao-conformidades/page": "app/nao-conformidades/page.js",
+  "/appcc/page": "app/appcc/page.js",
+  "/pacs/page": "app/pacs/page.js"
 }

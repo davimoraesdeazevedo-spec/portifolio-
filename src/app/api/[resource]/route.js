@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server';
 import { getResource } from '@/lib/resources';
-import { HttpError, createRow, listRows } from '@/lib/resource-service';
+import { HttpError, createRow, listRows, readJsonBody } from '@/lib/resource-service';
 import { exigirPermissao } from '@/lib/auth';
 import { permissaoDoRecurso } from '@/lib/roles';
 
@@ -42,7 +42,7 @@ export async function POST(request, { params }) {
 
   try {
     await exigirPermissao(permissaoDoRecurso(name, 'POST'));
-    const payload = await request.json();
+    const payload = await readJsonBody(request);
     const row = await createRow(name, resource, payload);
     return NextResponse.json({ data: row }, { status: 201 });
   } catch (error) {

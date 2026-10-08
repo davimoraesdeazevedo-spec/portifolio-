@@ -6,7 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { getResource } from '@/lib/resources';
-import { HttpError, deleteRow, getRow, updateRow } from '@/lib/resource-service';
+import { HttpError, deleteRow, getRow, readJsonBody, updateRow } from '@/lib/resource-service';
 import { exigirPermissao } from '@/lib/auth';
 import { permissaoDoRecurso } from '@/lib/roles';
 
@@ -47,7 +47,7 @@ export async function PATCH(request, { params }) {
 
   try {
     await exigirPermissao(permissaoDoRecurso(name, 'PATCH'));
-    const payload = await request.json();
+    const payload = await readJsonBody(request);
     const row = await updateRow(name, resource, id, payload);
     return NextResponse.json({ data: row });
   } catch (caught) {

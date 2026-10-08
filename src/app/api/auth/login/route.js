@@ -40,11 +40,24 @@ export async function POST(request) {
         throw new HttpError(403, 'Esta conta está desativada. Procure o supervisor.');
       }
     } else {
+      // ON CONFLICT: dois logins simultâneos com um nome novo não podem quebrar
+      // com erro de chave duplicada — nesse caso vale a conta que já foi criada.
       const criado = await query(
-        'INSERT INTO usuarios (nome, cargo) VALUES ($1, $2) RETURNING id, nome, cargo',
+        'INSERT INTO usuarios (nome, cargo) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id, nome, cargo',
         [nome, cargo]
       );
       usuario = criado.rows[0];
+
+      if (!usuario) {
+        const existente = await query(
+          'SELECT id, nome, cargo, ativo FROM usuarios WHERE lower(nome) = lower($1) LIMIT 1',
+          [nome]
+        );
+        usuario = existente.rows[0];
+        if (usuario?.ativo === false) {
+          throw new HttpError(403, 'Esta conta está desativada. Procure o supervisor.');
+        }
+      }
     }
 
     const token = await criarSessao(usuario.id);

@@ -20,6 +20,15 @@ function translateDbError(error) {
   return error;
 }
 
+/** Reads a request's JSON body; malformed or empty JSON becomes a 400, not a 500. */
+export async function readJsonBody(request) {
+  try {
+    return await request.json();
+  } catch {
+    throw new HttpError(400, 'Corpo da requisição inválido: envie um JSON válido.');
+  }
+}
+
 function coerce(value, type) {
   if (value === undefined) return undefined;
   if (value === null || value === '') return null;
@@ -129,10 +138,13 @@ export async function createRow(resourceName, resource, payload) {
   const columns = Object.keys(finalRow);
   const placeholders = columns.map((_, index) => `$${index + 1}`);
   try {
+    // ON CONFLICT DO NOTHING evita que uma chave repetida gere erro no log do
+    // banco; o resultado vazio é traduzido para o mesmo 409 de antes.
     const { rows } = await query(
-      `INSERT INTO ${resource.table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING *`,
+      `INSERT INTO ${resource.table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')}) ON CONFLICT DO NOTHING RETURNING *`,
       columns.map((column) => finalRow[column])
     );
+    if (!rows[0]) throw new HttpError(409, 'Já existe um registro com esse mesmo valor.');
     return rows[0];
   } catch (error) {
     throw translateDbError(error);
