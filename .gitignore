@@ -1,0 +1,3 @@
+# build output and dependencies (never commit)
+.next/
+node_modules/

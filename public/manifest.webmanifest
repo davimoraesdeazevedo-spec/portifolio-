@@ -1,0 +1,26 @@
+{
+  "name": "Autocontrole — PAC, APPCC e Rastreabilidade",
+  "short_name": "Autocontrole",
+  "description": "Gestão de PACs, APPCC, rastreabilidade e controle de qualidade para indústrias de produtos de origem animal (SIM, SISBI, SIE, SIF).",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f5f7",
+  "theme_color": "#0e7c66",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

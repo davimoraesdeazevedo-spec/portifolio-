@@ -1,0 +1,8 @@
+-- Sem dados de demonstração: o sistema começa zerado.
+--
+-- O schema (db/schema.sql) continua sendo aplicado a cada boot, mas nenhuma
+-- linha é inserida — o painel de controle, os alertas e todos os módulos
+-- começam em zero até que os usuários registrem os primeiros dados pelo app.
+--
+-- O arquivo é mantido (e permanece listado em scripts/migrate.js) para que o
+-- fluxo de migração continue idempotente e simples.

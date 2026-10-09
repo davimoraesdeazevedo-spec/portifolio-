@@ -1,0 +1,92 @@
+# Base44 development environment for the Autocontrole (PAC/APPCC) app.
+#
+# Stack: Next.js (React) dev server + Node.js API route handlers + PostgreSQL.
+# The whole app runs from the cloned source: the repo is bind-mounted into a
+# plain `node:22-slim` runtime, dependencies are synced from the committed
+# lockfile at startup, and the dev server provides hot reload.
+#
+# Local infrastructure credentials below are generated for development only.
+# Keys the user may later provide (e.g. a Supabase DATABASE_URL) live in
+# .env.base44-defaults as placeholders and are overridden by the platform-managed
+# /run/base44/app.env, which is listed LAST so the user's real values always win.
+#
+# Port 3000 is the user-facing web entry point (frontend + API on one origin).
+
+x-app-env: &app-env
+  env_file:
+    - ./.env.base44-defaults
+    - path: /run/base44/app.env
+      required: false
+
+x-app-volumes: &app-volumes
+  - ./:/app
+  - app_node_modules:/app/node_modules
+
+x-app-base: &app-base
+  image: node:22-slim
+  working_dir: /app
+  volumes: *app-volumes
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: autocontrole
+      POSTGRES_PASSWORD: autocontrole_dev
+      POSTGRES_DB: autocontrole
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autocontrole -d autocontrole"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  # Applies db/schema.sql and seeds demo data; exits when done.
+  migrate:
+    <<: *app-base
+    env_file:
+      - ./.env.base44-defaults
+      - path: /run/base44/app.env
+        required: false
+    command: ["sh", "scripts/base44-entrypoint.sh", "node", "scripts/migrate.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    <<: *app-base
+    restart: on-failure
+    env_file:
+      - ./.env.base44-defaults
+      - path: /run/base44/app.env
+        required: false
+    environment:
+      - BASE44_PREVIEW_MODE
+      - BASE44_PUBLIC_HOST_SUFFIX
+    ports:
+      # The preview proxy serves whatever listens on host port 3000.
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - app_node_modules:/app/node_modules
+      - uploads:/app/uploads
+    command: ["sh", "scripts/base44-entrypoint.sh", "npm", "run", "dev"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      # Probes the real page and an API endpoint that reads the database.
+      test: ["CMD-SHELL", "node scripts/base44-healthcheck.js"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 90s
+
+volumes:
+  db_data:
+  app_node_modules:
+  uploads:
