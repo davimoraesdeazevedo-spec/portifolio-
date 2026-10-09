@@ -313,6 +313,14 @@ const elemento=document.getElementById(id);
 
 if(!elemento)return;
 
+if(final<=0){
+
+elemento.innerHTML="0%";
+
+return;
+
+}
+
 const intervalo=setInterval(()=>{
 
 valor++;

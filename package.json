@@ -1,0 +1,13 @@
+{
+  "name": "nebuzx-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NebuZX personal portfolio (static HTML/CSS/JS).",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000 --strictPort",
+    "start": "vite --host 0.0.0.0 --port 3000 --strictPort"
+  },
+  "devDependencies": {
+    "vite": "^6.3.0"
+  }
+}
