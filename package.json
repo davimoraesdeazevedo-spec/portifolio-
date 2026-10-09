@@ -1,13 +1,18 @@
 {
-  "name": "nebuzx-portfolio",
+  "name": "autocontrole-app",
   "version": "1.0.0",
   "private": true,
-  "description": "NebuZX personal portfolio (static HTML/CSS/JS).",
+  "description": "Sistema de gestão de PACs, APPCC, rastreabilidade e controle de qualidade para indústrias de produtos de origem animal (SIM/SISBI/SIE/SIF).",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 3000 --strictPort",
-    "start": "vite --host 0.0.0.0 --port 3000 --strictPort"
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 3000",
+    "migrate": "node scripts/migrate.js"
   },
-  "devDependencies": {
-    "vite": "^6.3.0"
+  "dependencies": {
+    "next": "^15.1.0",
+    "pg": "^8.13.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

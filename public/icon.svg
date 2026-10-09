@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Autocontrole">
+  <rect width="512" height="512" rx="112" fill="#0e7c66"/>
+  <path d="M256 92l124 46v112c0 84-52 148-124 172-72-24-124-88-124-172V138l124-46z" fill="#ffffff" opacity="0.14"/>
+  <path d="M256 78l132 49v117c0 90-55 158-132 184-77-26-132-94-132-184V127l132-49z" fill="none" stroke="#ffffff" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M186 250l52 52 100-104" fill="none" stroke="#9fe8d3" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
