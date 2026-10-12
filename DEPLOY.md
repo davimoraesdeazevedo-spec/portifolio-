@@ -67,3 +67,24 @@ npm run build   # é o que a Vercel executa
 ```
 
 Para o app local de desenvolvimento (Base44 sandbox), veja `AGENTS.md`.
+
+## Portfólio NebuZX (GitHub Pages)
+
+O portfólio estático que já existia neste repositório — removido quando o app
+Autocontrole foi migrado para cá, e recuperado do histórico do Git — são os
+arquivos `index.html`, `style.css` e `script.js` **na raiz**. O GitHub Pages já
+está ligado apontando para a raiz da `main` (**Settings → Pages → Deploy from a
+branch: `main` / `(root)`**), então o endereço é:
+
+**https://davimoraesdeazevedo-spec.github.io/portifolio-/**
+
+- O endereço estava em 404 porque esses arquivos tinham sido apagados na
+  migração: sem um `index.html`, o build do Pages não tem o que publicar. Eles
+  precisam continuar na raiz enquanto o Pages estiver configurado assim.
+- `img/bot.png` (imagem do card "JKR Bot") nunca foi commitada — o card aparece
+  sem imagem até o arquivo existir em `img/`, ao lado dos outros.
+- **Só o portfólio vai para o Pages:** o Autocontrole precisa de servidor
+  (Next.js, rotas de API, sessão) e de PostgreSQL, e hospedagem estática não roda
+  nada disso. O sistema segue no caminho Vercel + Supabase descrito acima.
+- O app não é afetado: o Next.js ignora arquivos da raiz do repositório e `/`
+  continua sendo o sistema.

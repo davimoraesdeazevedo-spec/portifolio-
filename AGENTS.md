@@ -117,3 +117,13 @@ Target: Supabase Postgres + Next.js on Vercel. Step-by-step (connection string
 with `sslmode=require`, migrations, env vars) and the known limitations are in
 `DEPLOY.md`. Vercel auto-detects Next.js — there is no `vercel.json` — and no page
 reads the database at build time, so `next build` runs without `DATABASE_URL`.
+
+## Portfólio estático (GitHub Pages)
+
+`index.html`, `style.css` e `script.js` na raiz do repositório são o portfólio
+NebuZX (recuperado do histórico do Git). O GitHub Pages publica a **raiz da
+`main`** — `https://davimoraesdeazevedo-spec.github.io/portifolio-/` — então não
+mova nem renomeie esses arquivos sem ajustar a pasta em **Settings → Pages**. O
+Next.js ignora arquivos da raiz: `/` continua sendo o Autocontrole. `img/bot.png`
+nunca foi commitado, então o card "JKR Bot" fica sem imagem até esse arquivo
+aparecer. O app inteiro **não** roda no Pages (sem servidor, sem banco).
